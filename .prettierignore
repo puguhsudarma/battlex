@@ -1,0 +1,6 @@
+ios/**
+android/**
+.yarn/**
+.vscode/**
+.expo/**
+node_modules/**
