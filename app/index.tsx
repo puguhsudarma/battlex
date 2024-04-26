@@ -1,26 +1,46 @@
-import {Canvas, Circle, Group} from '@shopify/react-native-skia';
+import {Canvas, Circle, Fill} from '@shopify/react-native-skia';
 import React from 'react';
-import {Text, View} from 'react-native';
+import {useWindowDimensions} from 'react-native';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
+import {useSharedValue, withDecay} from 'react-native-reanimated';
 
 const App: React.FC = () => {
-  const width = 256;
-  const height = 256;
-  const r = width * 0.33;
+  const {width, height} = useWindowDimensions();
+  const leftBoundary = 0;
+  const rightBoundary = width;
+  const topBoundary = 0;
+  const bottomBoundary = height;
+  const translateX = useSharedValue(width / 2);
+  const translateY = useSharedValue(height / 2);
+
+  const gesture = Gesture.Pan()
+    .onChange((e) => {
+      translateX.value += e.changeX;
+      translateY.value += e.changeY;
+    })
+    .onEnd((e) => {
+      translateX.value = withDecay({
+        velocity: e.velocityX,
+        clamp: [leftBoundary, rightBoundary],
+      });
+
+      translateY.value = withDecay({
+        velocity: e.velocityY,
+        clamp: [topBoundary, bottomBoundary],
+      });
+    });
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <Canvas style={{width, height}}>
-        <Group blendMode="multiply">
-          <Circle cx={r} cy={r} r={r} color="cyan" />
-          <Circle cx={width - r} cy={r} r={r} color="magenta" />
-          <Circle cx={width / 2} cy={width - r} r={r} color="yellow" />
-        </Group>
+    <GestureDetector gesture={gesture}>
+      <Canvas style={{flex: 1}}>
+        <Fill color="white" />
+        <Circle cx={translateX} cy={translateY} r={20} color="#3E3E" />
       </Canvas>
-    </View>
+    </GestureDetector>
   );
 };
 
