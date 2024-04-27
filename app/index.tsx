@@ -1,47 +1,33 @@
-import {Canvas, Circle, Fill} from '@shopify/react-native-skia';
+import {GridBoard} from '@/components/board';
+import {colors} from '@/constants/colors';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
-import {useWindowDimensions} from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
-import {useSharedValue, withDecay} from 'react-native-reanimated';
+import {StyleSheet, View} from 'react-native';
 
 const App: React.FC = () => {
-  const {width, height} = useWindowDimensions();
-  const leftBoundary = 0;
-  const rightBoundary = width;
-  const topBoundary = 0;
-  const bottomBoundary = height;
-  const translateX = useSharedValue(width / 2);
-  const translateY = useSharedValue(height / 2);
-
-  const gesture = Gesture.Pan()
-    .onChange((e) => {
-      translateX.value += e.changeX;
-      translateY.value += e.changeY;
-    })
-    .onEnd((e) => {
-      translateX.value = withDecay({
-        velocity: e.velocityX,
-        clamp: [leftBoundary, rightBoundary],
-      });
-
-      translateY.value = withDecay({
-        velocity: e.velocityY,
-        clamp: [topBoundary, bottomBoundary],
-      });
-    });
-
   return (
-    <GestureDetector gesture={gesture}>
-      <Canvas style={{flex: 1}}>
-        <Fill color="white" />
-        <Circle cx={translateX} cy={translateY} r={20} color="#3E3E" />
-      </Canvas>
-    </GestureDetector>
+    <View style={styles.container}>
+      <GridBoard backgroundColor={colors.plum1} />
+
+      <Ionicons
+        name="arrow-back"
+        size={100}
+        color={colors.yellow}
+        style={{marginHorizontal: 32}}
+      />
+
+      <GridBoard backgroundColor={colors.plum2} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default App;
