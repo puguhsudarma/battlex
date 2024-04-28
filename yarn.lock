@@ -4173,6 +4173,10 @@ expo-modules-core@1.11.13:
   dependencies:
     invariant "^2.2.4"
 
+"expo-nearby-connections@https://github.com/puguhsudarma/expo-nearby-connections#develop":
+  version "0.1.0"
+  resolved "https://github.com/puguhsudarma/expo-nearby-connections#1bf97fd5aa7d91dda0d144f0b94511002c82ecd6"
+
 expo-router@~3.4.8:
   version "3.4.8"
   resolved "https://registry.yarnpkg.com/expo-router/-/expo-router-3.4.8.tgz#c7e55f500467985950760d325f75d06f8dfc17e7"
