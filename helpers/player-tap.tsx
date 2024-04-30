@@ -6,7 +6,7 @@ export const playerTap = (
   i: number,
   j: number,
   players: SkiaMutableValue<number[][]>,
-  setPlayer1Turn: React.Dispatch<React.SetStateAction<boolean>>,
+  setPlayer1Turn: () => void,
 ) => {
   'worklet';
 
@@ -17,7 +17,7 @@ export const playerTap = (
   }
 
   if (current === 0) {
-    setPlayer1Turn((prev) => !prev);
+    setPlayer1Turn();
   }
 
   players.current = produce(players.current, (draft) => {

@@ -6,6 +6,7 @@ import {
   SQUARES_AMOUNT_VERTICAL,
   SQUARE_CONTAINER_SIZE,
 } from '@/constants/values';
+import {useGameEngine} from '@/hooks/use-game-engine';
 import {
   Canvas,
   SkiaMutableValue,
@@ -18,18 +19,19 @@ interface Props {
   backgroundColor?: string;
   players: SkiaMutableValue<number[][]>;
   playerTap: (i: number, j: number) => void;
-  disabled?: boolean;
+  isPlayer1?: boolean;
 }
 
 export const GridBoard: React.FC<Props> = ({
   backgroundColor,
   players: touchedRects,
   playerTap,
-  disabled,
+  isPlayer1,
 }) => {
+  const {player1Turn} = useGameEngine();
   const touchHandler = useTouchHandler({
     onStart(e) {
-      if (disabled) {
+      if (!isPlayer1 && player1Turn.current) {
         return;
       }
 

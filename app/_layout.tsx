@@ -1,15 +1,25 @@
-import {GameEngineProvider} from '@/providers/game-engine-provider';
+import { NearbyConnectionProvider } from '@/providers/nearby-connection-provider';
 import {Slot} from 'expo-router';
 import {StatusBar} from 'expo-status-bar';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 export default function RootLayout() {
   return (
-    <GameEngineProvider>
+    <NearbyConnectionProvider>
       <SafeAreaView style={{flex: 1}}>
         <StatusBar hidden />
         <Slot />
       </SafeAreaView>
-    </GameEngineProvider>
+    </NearbyConnectionProvider>
   );
+  // return (
+  //   <NearbyConnectionProvider>
+  //     <GameEngineProvider>
+  //       <SafeAreaView style={{flex: 1}}>
+  //         <StatusBar hidden />
+  //         <Slot />
+  //       </SafeAreaView>
+  //     </GameEngineProvider>
+  //   </NearbyConnectionProvider>
+  // );
 }
