@@ -1,11 +1,12 @@
 import {GridBoard} from '@/components/board';
 import {colors} from '@/constants/colors';
 import {useGameEngine} from '@/hooks/use-game-engine';
+import {GameEngineProvider} from '@/providers/game-engine-provider';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import {Button, StyleSheet, View} from 'react-native';
 
-const App: React.FC = () => {
+const Gameplay: React.FC = () => {
   const {
     player1,
     player1Tap,
@@ -63,4 +64,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default function GameplayScreen() {
+  return (
+    <GameEngineProvider>
+      <Gameplay />
+    </GameEngineProvider>
+  );
+}

@@ -1,4 +1,5 @@
 import {checkPermission, requestPermission} from '@/helpers/handle-permission';
+import {SendTypes} from '@/types/send-types';
 import Constants from 'expo-constants';
 import {
   ConnectionResult,
@@ -29,7 +30,7 @@ export interface ContextValue {
   handleStopDiscoverer: () => void;
   handleRequest: (endpoint: EndpointFound, onAccepted: () => void) => void;
   handleStopRequest: () => void;
-  handleSend: (payload: string) => void;
+  handleSend: (payload: SendTypes) => void;
   handleDisconnect: () => void;
 }
 
@@ -189,9 +190,9 @@ export const NearbyConnectionProvider: React.FC<Props> = ({children}) => {
   }, []);
 
   const handleSend = useCallback(
-    async (payload: string) => {
+    async (payload: SendTypes) => {
       if (connectedDevice) {
-        await sendPayload(connectedDevice.endpointId, payload);
+        await sendPayload(connectedDevice.endpointId, JSON.stringify(payload));
       }
     },
     [connectedDevice],

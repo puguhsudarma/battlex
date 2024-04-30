@@ -1,7 +1,9 @@
 import {generatePlayerDimensions} from '@/helpers/generate-player-dimensions';
 import {playerTap} from '@/helpers/player-tap';
+import {useNearbyConnection} from '@/hooks/use-nearby-connection';
+import {usePayloadReceivedNearby} from '@/hooks/use-payload-received-nearby';
 import {SkiaMutableValue, useValue} from '@shopify/react-native-skia';
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 
 export interface ContextValue {
   player1: SkiaMutableValue<number[][]>;
@@ -22,21 +24,82 @@ interface Props {
 }
 
 export const GameEngineProvider: React.FC<Props> = ({children}) => {
-  const player1 = useValue<number[][]>([]);
-  const player2 = useValue<number[][]>([]);
+  const player1 = useValue<number[][]>(
+    useMemo(() => generatePlayerDimensions(), []),
+  );
+
+  const player2 = useValue<number[][]>(
+    useMemo(() => generatePlayerDimensions(), []),
+  );
+
   const player1Turn = useValue(true);
   const [player1TurnState, setPlayer1TurnState] = useState(true);
+  const [rerender, setRerender] = useState(true);
 
-  const player1Tap = (i: number, j: number) =>
+  const {connectedDevice, isAdvertising, handleSend} = useNearbyConnection();
+
+  useEffect(() => {
+    if (!!connectedDevice && isAdvertising) {
+      player1.current = generatePlayerDimensions();
+      player2.current = generatePlayerDimensions();
+
+      handleSend({
+        type: 'PlayerDimensions',
+        player1: player1.current,
+        player2: player2.current,
+      });
+
+      player1Turn.current = true;
+      setPlayer1TurnState(true);
+    }
+  }, [connectedDevice, isAdvertising]);
+
+  usePayloadReceivedNearby((payload) => {
+    if (payload.type !== 'PlayerDimensions') return;
+
+    player1.current = payload.player1;
+    player2.current = payload.player2;
+  });
+
+  usePayloadReceivedNearby((payload) => {
+    if (payload.type !== 'PlayerTap') return;
+
+    const {i, j} = payload;
+    if (player1Turn.current) {
+      player2Tap(i, j, false);
+    }
+
+    if (!player1Turn.current) {
+      player1Tap(i, j, false);
+    }
+
+    setRerender((prev) => !prev);
+  });
+
+  const player1Tap = (i: number, j: number, isSend = true) =>
     playerTap(i, j, player1, () => {
       setPlayer1TurnState((prev) => !prev);
       player1Turn.current = !player1Turn.current;
+      if (isSend) {
+        handleSend({
+          type: 'PlayerTap',
+          i,
+          j,
+        });
+      }
     });
 
-  const player2Tap = (i: number, j: number) =>
+  const player2Tap = (i: number, j: number, isSend = true) =>
     playerTap(i, j, player2, () => {
       setPlayer1TurnState((prev) => !prev);
       player1Turn.current = !player1Turn.current;
+      if (isSend) {
+        handleSend({
+          type: 'PlayerTap',
+          i,
+          j,
+        });
+      }
     });
 
   const handleReset = () => {
